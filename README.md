@@ -20,10 +20,10 @@ Note: This currently only works with the v2.2+ of shell (which you can use with 
 
 ### Java UUID support
 
-To support UUIDs serialized by Java driver you need explicitly enable plugin 'opt.mongo.java.uuid.js':
+To support UUIDs serialized by Java driver you need explicitly enable plugin 'opt.mongo.uuid.le.js':
 
 ```
-ln -sf <mongo-hacker-dir>/opt.mongo.java.uuid.js ~/.mongorc.uuid.js
+ln -sf <mongo-hacker-dir>/opt.mongo.uuid.le.js ~/.mongorc.uuid.js
 ```
 
 ## Enhancements
