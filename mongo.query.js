@@ -141,6 +141,18 @@ DBQuery.prototype.one = function(){
     return this.limit(1)[0];
 };
 
+DBQuery.prototype.reverse = function( field ){
+    var field = field || "$natural";
+    var sortBy = {};
+    sortBy[field] = -1;
+    return this.sort(sortBy);
+};
+
+DBQuery.prototype.last = function( field ){
+    var field = field || "$natural";
+    return this.reverse(field).one();
+};
+
 // Override group because map/reduce style is deprecated
 DBCollection.prototype.agg_group = function( name, group_field, operation, op_value, filter ) {
     var ops = [];
