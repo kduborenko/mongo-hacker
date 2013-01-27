@@ -36,7 +36,7 @@ load(scriptDir + "/settings.js");
 
 var loadPlugins = function(scanMsg, scanDir, fileTemplate, loggingMsg) {
     print(scanMsg);
-    ls(scanDir).forEach(function (file){
+    ls(scanDir).sort().forEach(function (file){
         if (file.match(fileTemplate)) {
             print(loggingMsg(file));
             load(file);
