@@ -82,7 +82,7 @@ DB.prototype.rename = function(newName) {
 };
 
 DBQuery.prototype._checkMulti = function(){
-    if(this._limit > 0){
+    if(this._limit > 0 || this._skip > 0){
         var ids = this.clone().select({_id: 1}).map(function(o){return o._id;});
         this._query['_id'] = {'$in': ids};
         return true;
@@ -139,6 +139,13 @@ DBQuery.prototype.select = function( fields ){
 
 DBQuery.prototype.one = function(){
     return this.limit(1)[0];
+};
+
+DBQuery.prototype.first = function(field){
+    var field = field || "$natural";
+    var sortBy = {};
+    sortBy[field] = 1;
+    return this.sort(sortBy).one();
 };
 
 DBQuery.prototype.reverse = function( field ){
