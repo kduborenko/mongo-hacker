@@ -21,6 +21,7 @@
 
     DB.prototype.stats = function (original) {
         var stats = super_db_stats.call(this);
+        var db = this;
         if (!original) {
             ["avgObjSize", "dataSize", "storageSize", "indexSize", "fileSize"].forEach(function (f) {
                 if (f in stats) {
@@ -35,7 +36,7 @@
 
             stats.collections = [];
             this.getCollectionNames().forEach(function (c) {
-                stats.collections.push(this[c].stats())
+                stats.collections.push(db[c].stats())
             });
         }
         return stats;
