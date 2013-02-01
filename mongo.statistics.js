@@ -35,7 +35,7 @@
 
             stats.collections = [];
             this.getCollectionNames().forEach(function (c) {
-                stats.collections.push(db[c].stats())
+                stats.collections.push(this[c].stats())
             });
         }
         return stats;
