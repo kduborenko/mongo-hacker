@@ -9,3 +9,5 @@ setVerboseShell(settings.verboseShell);
 setIndexParanoia(settings.indexParanoia);
 __indent = settings.indent;
 uuidType = settings.uuidType || "default";
+
+DBQuery.prototype._prettyShell = true;

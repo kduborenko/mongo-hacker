@@ -48,6 +48,7 @@ DB.prototype._getExtraInfo = function(action) {
     }
 
     // explicit w:1 so that replset getLastErrorDefaults aren't used here which would be bad.
+    var startTime = new Date().getTime();
     var res = this.getLastErrorCmd(1);
     if (res) {
         if (res.err !== undefined && res.err !== null) {
@@ -61,8 +62,8 @@ DB.prototype._getExtraInfo = function(action) {
         info += action != "Inserted" ? res.n : 1;
         if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
-        var time = new Date().getTime() - this.startTime;
-        var slowms = this.setProfilingLevel().slowms;
+        var time = new Date().getTime() - startTime;
+        var slowms = this.getProfilingLevel().slowms;
         if (time > slowms) {
             info += colorize(time + "ms", "red", true);
         } else {
@@ -196,7 +197,7 @@ DBQuery.prototype.shellPrint = function(){
         var start = new Date().getTime();
         var n = 0;
         while ( this.hasNext() && n < DBQuery.shellBatchSize ){
-            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , false );
+            var s = this._prettyShell ? tojson( this.next() ) : tojson( this.next() , "" , true );
             print( s );
             n++;
         }
@@ -205,7 +206,7 @@ DBQuery.prototype.shellPrint = function(){
 
         if (typeof _verboseShell !== 'undefined' && _verboseShell) {
             var time = new Date().getTime() - start;
-            var slowms = this._db.setProfilingLevel().slowms;
+            var slowms = this._db.getProfilingLevel().slowms;
             var fetched = "Fetched " + n + " record(s) in ";
             if (time > slowms) {
                 fetched += colorize(time + "ms", "red", true);
@@ -244,3 +245,16 @@ DBQuery.prototype.shellPrint = function(){
         print( e );
     }
 };
+
+function findCommand(query) {
+    var regexp = new RegExp(query, "i");
+    var result = db.runCommand("listCommands");
+
+    var matches = [ ];
+    for (var command in result.commands) {
+        if (regexp.test(command)) {
+            matches.push(command);
+        }
+    }
+    return matches;
+}
