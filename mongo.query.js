@@ -41,6 +41,18 @@ DBQuery.prototype._validateForStorage = function( o ){
     }
 };
 
+function isMongos() {
+    return db.isMaster().msg == 'isdbgrid';
+}
+
+function getSlowms(){
+    if(!isMongos()){
+        return db.getProfilingStatus().slowms;
+    } else {
+        return 100;
+    }
+}
+
 DB.prototype._getExtraInfo = function(action) {
     if ( typeof _verboseShell === 'undefined' || !_verboseShell ) {
         __callLastError = true;
@@ -63,7 +75,7 @@ DB.prototype._getExtraInfo = function(action) {
         if (res.n > 0 && res.updatedExisting !== undefined) info += " " + (res.updatedExisting ? "existing" : "new");
         info += " record(s) in ";
         var time = new Date().getTime() - startTime;
-        var slowms = this.getProfilingLevel().slowms;
+        var slowms = getSlowms();
         if (time > slowms) {
             info += colorize(time + "ms", "red", true);
         } else {
@@ -246,15 +258,26 @@ DBQuery.prototype.shellPrint = function(){
     }
 };
 
-function findCommand(query) {
-    var regexp = new RegExp(query, "i");
-    var result = db.runCommand("listCommands");
+shellHelper.find = function (query) {
+    assert(typeof query == "string");
 
-    var matches = [ ];
-    for (var command in result.commands) {
-        if (regexp.test(command)) {
-            matches.push(command);
+    var args = query.split( /\s+/ );
+    query = args[0];
+    args = args.splice(1);
+
+    if (query !== "") {
+        var regexp = new RegExp(query, "i");
+        var result = db.runCommand("listCommands");
+        for (var command in result.commands) {
+            var commandObj = result.commands[command];
+            var help = commandObj.help;
+            if (commandObj.help.indexOf('\n') != -1 ) {
+                help = commandObj.help.substring(0, commandObj.help.lastIndexOf('\n'));
+            }
+            if (regexp.test(command) || regexp.test(help)) {
+                var numSpaces = 30 - command.length;
+                print(colorize(command, 'green'), Array(numSpaces).join(" "), "-", help);
+            }
         }
     }
-    return matches;
-}
+};
