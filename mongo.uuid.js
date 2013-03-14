@@ -34,19 +34,19 @@
         return new BinData(typeNum, hexToBase64(hex));
     };
 
-    function uuidToString(uuid, uuidType) {
-        var hex = platformSpecificUuidModifications[uuidType](base64ToHex(uuid.base64()));
+    BinData.prototype.toHexString = function(uuidType) {
+        var hex = platformSpecificUuidModifications[uuidType](base64ToHex(this.base64()));
         return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4)
             + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
-    }
+    };
 
     var bd_super_tojson = BinData.prototype.tojson;
 
     BinData.prototype.tojson = function(indent , nolint) {
         if (this.subtype() === 3) {
-            return 'UUID(' + colorize('"' + uuidToString(this, uuidType) + '"', "cyan") + ', ' + colorize('"' + uuidType + '"', "cyan") +')'
+            return 'UUID(' + colorize('"' + this.toHexString(uuidType) + '"', "cyan") + ', ' + colorize('"' + uuidType + '"', "cyan") +')'
         } else if (this.subtype() === 4) {
-            return 'UUID(' + colorize('"' + uuidToString(this, "default") + '"', "cyan") + ')'
+            return 'UUID(' + colorize('"' + this.toHexString("default") + '"', "cyan") + ')'
         } else {
             return bd_super_tojson.call(this, indent, nolint);
         }
