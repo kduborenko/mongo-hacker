@@ -1,5 +1,5 @@
 (function () {
-    var tojson = function (x, indent, nolint) {
+    this.tojson = function (x, indent, nolint) {
         if (x === null)
             return colorize("null", "red", true);
 
