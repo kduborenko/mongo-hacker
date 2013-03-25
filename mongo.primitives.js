@@ -71,14 +71,6 @@ NumberInt.prototype.tojson = function() {
     return 'NumberInt(' + colorize('"' + this.toString().match(/-?\d+/)[0] + '"', "red") + ')';
 };
 
-Array.prototype.shellPrint = function(){
-    print(tojson(this, "", false))
-};
-
-bson_object.prototype.shellPrint = function(){
-    print(tojson(this, "", false))
-};
-
 BinData.prototype.tojson = function(indent , nolint) {
     return 'BinData(' + colorize(this.subtype(), "red") + ', ' + colorize('"' + this.base64() + '"', "green", true) + ')';
 };
